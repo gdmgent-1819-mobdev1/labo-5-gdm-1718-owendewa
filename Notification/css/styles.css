@@ -79,3 +79,6 @@ body {
   background: #B2CD49;
     border:none;
 }
+.deleteKnop{
+  display: none;
+}
