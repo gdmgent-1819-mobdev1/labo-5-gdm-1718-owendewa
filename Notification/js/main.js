@@ -127,18 +127,25 @@ function getData(data){
     let createDatum = document.createElement('H3');
     createDatum.innerHTML = datum;
     let deleteButton = document.createElement('button');
-    deleteButton.innerHTML = 'delete';
-    deleteButton.classList.add('deleteKnop');
+    deleteButton.innerHTML = 'Delete';
+    deleteButton.classList.add('deleteKnop'+i);
+    let editButton = document.createElement('button');
+    editButton.innerHTML = 'Edit';
+    editButton.classList.add('editKnop'+i);
+
     let post = document.createElement('div');
+    post.classList.add('contentBox');
+
     post.appendChild(createTitel);
     post.appendChild(createContent);
     post.appendChild(createAuteur);
     post.appendChild(createDatum);
     post.appendChild(deleteButton);
+    post.appendChild(editButton);
     box.appendChild(post);
-    let buttons = document.querySelectorAll(".deleteKnop");
-    for(let i = 0; i<buttons.length; i++){
-      buttons[i].addEventListener('click', remove);
+    let buttons = document.querySelectorAll("button");
+    for(let y = 0; y<buttons.length; y++){
+      buttons[y].addEventListener('click', remove);
     }
   }
 }
