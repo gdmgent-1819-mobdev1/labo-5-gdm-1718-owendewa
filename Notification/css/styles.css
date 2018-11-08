@@ -7,6 +7,9 @@ body {
 .error {
   color:red;
 }
+#editor1{
+  max-width:250px;
+}
 .formBox{
   max-width:250px;
   background: #F9F9F9;
@@ -69,7 +72,7 @@ body {
   box-sizing: border-box;
   padding-left:2%;
 }
-.formBoxPost button{
+button{
   max-width:200px;
   width:100%;
   margin-top:2%;
@@ -81,6 +84,9 @@ body {
     border:none;
 }
 .deleteKnop{
+  display: none;
+}
+.editKnop{
   display: none;
 }
 #postList{
@@ -102,19 +108,19 @@ div.contentBox{
   box-sizing: border-box;
   padding:5%;
 }
-div.contentBox h1{
+#postlist h1{
 text-align:center;
 padding-bottom:5%;
 }
-div.contentBox p{
+#postlist p{
   padding-bottom:5%;
   padding-left:5%;
 }
-div.contentBox h3{
+#postlist h3{
   font-size:1em;
   text-align:center;
 }
-div.contentBox button{
+#postlist button{
   max-width:600px;
   width:100%;
   margin-top:2%;
@@ -124,4 +130,30 @@ div.contentBox button{
   background: #B2CD49;
   border:none;
   font-size: 1.2em;
+}
+.formBoxEdit{
+  display:none;
+  max-width:500px;
+  background: #F9F9F9;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+  width:100%;
+  margin:40px auto;
+}
+.formBoxEdit label{
+  margin-left:15%;
+}
+.formBoxEdit h1{
+  margin-left:42.5%;
+ padding-top:15% ;
+}
+.formBoxEdit input{
+  max-width:200px;
+  width:100%;
+  display: block;
+  margin:10px auto;
+  height:25px;
+  border: 1px solid #ccc;
+  background: #FFF;
+  box-sizing: border-box;
+  padding-left:2%;
 }

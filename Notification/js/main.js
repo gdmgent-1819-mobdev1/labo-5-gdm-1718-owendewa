@@ -62,7 +62,13 @@ function login(e){
       document.querySelector('.formBoxPost').style.display="block";
       let buttons = document.querySelectorAll(".deleteKnop");
       for(let i = 0; i<buttons.length; i++){
+        buttons[i].addEventListener('click', remove);
         buttons[i].style.display="block";
+      }
+      let editButtons = document.querySelectorAll(".editKnop");
+      for(let y = 0; y<editButtons.length; y++){
+        editButtons[y].style.display="block";
+        editButtons[y].addEventListener('click', edit);
       }
     })
       
@@ -83,87 +89,66 @@ function publish(e){
   let titel = document.getElementById("titel").value;
   let blog = CKEDITOR.instances.editor1.getData();
   let auteur = email;
-  let date = new Date();  
+  let date = new Date();
+  let day = date.getDate();
+  let month = date.getMonth();
+  let year = date.getFullYear();
+  let postedOn = day +' '+month+' '+year;
   
   let articleData = {
     title: titel,
     body: blog,
     auteur:auteur,
-    date_added:date,
+    date_added:postedOn,
     date_edited: firebase.database.ServerValue.TIMESTAMP,
     uid: email,
   };
-  let key = database.ref('article').push().key;
+  let key = database.ref('article').push(articleData);
   let updates = {};
-  updates['article/' + key] = articleData;
-  return database.ref().update(updates)
+  updates['article/' + key];
+  return database.ref().update(updates) 
     .then(function(){
       notify('Uw artikel is aangemaakt!')
-      
     })
     .catch(function(error) {
         console.log(error);
         alert(error.message)
     }); 
 }
-function getData(data){
-  let articles = data.val();
-  let keys = Object.keys(articles);
-  console.log(keys);
-  for(let i=0; i<keys.length; i++){
-    let k = keys[i];
-    let titel = articles[k].title;
-    let auteur = articles[k].auteur;
-    let content = articles[k].body;
-    let datum = articles[k].date_added;
-    console.log(titel,auteur,content,datum);
-    let box = document.getElementById('postList');
-    let createTitel = document.createElement('H1');
-    createTitel.innerHTML = titel;
-    let createContent = document.createElement('p');
-    createContent.innerHTML = content;
-    let createAuteur = document.createElement('H3');
-    createAuteur.innerHTML = auteur;
-    let createDatum = document.createElement('H3');
-    createDatum.innerHTML = datum;
-    let deleteButton = document.createElement('button');
-    deleteButton.innerHTML = 'Delete';
-    deleteButton.classList.add('deleteKnop'+i);
-    let editButton = document.createElement('button');
-    editButton.innerHTML = 'Edit';
-    editButton.classList.add('editKnop'+i);
-
-    let post = document.createElement('div');
-    post.classList.add('contentBox');
-
-    post.appendChild(createTitel);
-    post.appendChild(createContent);
-    post.appendChild(createAuteur);
-    post.appendChild(createDatum);
-    post.appendChild(deleteButton);
-    post.appendChild(editButton);
-    box.appendChild(post);
-    let buttons = document.querySelectorAll("button");
-    for(let y = 0; y<buttons.length; y++){
-      buttons[y].addEventListener('click', remove);
-    }
+function getValues(){
+    document.querySelector('#postList').innerHTML = "";
+    ref.on('value', function(snapshot) {
+      console.log(snapshot.val());
+      snapshot.forEach(function(childSnapshot) {
+          data = childSnapshot.val();
+          console.log(data);
+          document.querySelector('#postList').innerHTML += '<h1>' + data.title + '</h1>';
+          document.querySelector('#postList').innerHTML += '<p>' + data.auteur + ' - ' + data.date_added + '</p>';
+          document.querySelector('#postList').innerHTML += '<p>' + data.body + '</p><button id="' + childSnapshot.key + '" class="deleteKnop">Remove</button><button id="' + childSnapshot.key + '" class="editKnop">Edit</button>';
+      });
+    });
   }
+
+
+function remove(e){
+  let articleKey = e.currentTarget.id
+  let article = database.ref('article/' + articleKey);
+  article.remove();
+ }
+function edit(e){
+  let editform = document.querySelector('.formBoxEdit');
+  editform.style.display = "block";
+  let articleKey = e.currentTarget.id
+  let article = database.ref('article/' + articleKey);
+  article.on('value',function(snapshot){
+    data = snapshot.val();
+    document.getElementById('editTitel').value = data.title;
+    document.getElementById('editEditor').value = data.body;
+    
+  });
+
+
 }
-
-function remove(){
-    ref.on('value',function(snapshot){
-      const data = snapshot.val() || null;
-      const id = Object.keys(data);
-      let buttons = document.querySelectorAll(".deleteKnop");
-      for(let i = 0; i<buttons.length; i++){
-        number = i;
-        buttons[i].addEventListener('click', function(){
-          console.log(id[number]);
-        })
-      }      
-    })
-  }
-
 function errData(err){
   console.log(err);
 }

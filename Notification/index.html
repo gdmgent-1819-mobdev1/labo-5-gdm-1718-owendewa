@@ -46,6 +46,16 @@
                 <button type="submit" id="publish">Publish</button>
             </form>
         </div>
+
+        <div class="formBoxEdit">   
+            <form action="">
+                <input type="text" placeholder="editTitel" id="editTitel">
+                    <textarea name="editEditor" id="editEditor" rows="10" cols="80">
+                    </textarea>
+                    
+                <button type="submit" id="editButton">Confirm edit</button>
+            </form>
+        </div>
     <div id="postList">
 
     </div>
@@ -71,7 +81,7 @@
         firebase.initializeApp(config);
         database = firebase.database();
         let ref = database.ref('article');
-        ref.on('value', getData, errData);
+        ref.on('value', getValues, errData);
     </script>
 </body>
 
