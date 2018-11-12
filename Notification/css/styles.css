@@ -7,6 +7,10 @@ body {
 .error {
   color:red;
 }
+#forgot{
+margin-left:27.5%;
+color: rgb(47, 99, 138);
+}
 #editor1{
   max-width:250px;
 }

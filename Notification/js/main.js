@@ -1,5 +1,5 @@
+/* Notification */
 var permission = Notification.permission;
-
 function Permission (){
   if(Notification && Notification.permission == 'default') {
      Notification.requestPermission((permission) => {
@@ -20,32 +20,28 @@ function Permission (){
         setTimeout(notification.close.blind(notification),3000);
       }
     };
-
+    /*Ask Permission */
 Permission();
-
 document.getElementById("signup").addEventListener('click', signup);
 document.getElementById("login").addEventListener('click', login);
 document.getElementById("publish").addEventListener('click', publish);
-
+/*Signup function*/
 function signup(e){
   let email = document.getElementById("signup_email").value;
   let password = document.getElementById("signup_password").value;
   firebase.auth().createUserWithEmailAndPassword(email, password)
   .then(function(response){  
     notify('U bent geregistreed!','bedankt voor het aanmaken van uw account')
-
     })
-   
     .catch(function(error) {
     // Handle Errors here.
     var errorCode = error.code;
     var errorMessage = error.message;
     // show errors in console
     document.querySelector('.singup_errorCode').innerHTML = errorMessage;
-      
   });
 }
-
+/*Login function*/
 function login(e){
   e.preventDefault();
   let email = document.getElementById("login_email").value;
@@ -71,20 +67,29 @@ function login(e){
         editButtons[y].addEventListener('click', edit);
       }
     })
-      
     .catch(function(error) {
     // Handle Errors here.
     var errorCode = error.code;
     var errorMessage = error.message;
     // show errors in console
     document.querySelector('.login_errorCode').innerHTML = errorMessage;
-    
   });
 }
-
+/**Reset funtion */
+document.getElementById('forgot').addEventListener('click', reset);
+function reset(e){
+  e.preventDefault();
+  var auth = firebase.auth();
+  var emailAddress = document.getElementById("login_email").value;
+  auth.sendPasswordResetEmail(emailAddress).then(function() {
+  alert('Reset is verzonden naar '+emailAddress);
+  }).catch(function(error) {
+  // An error happened.
+  });
+}
+/**Publish function*/
 function publish(e){
   e.preventDefault(); 
-   
   let email = document.getElementById('userInfo').innerHTML;
   let titel = document.getElementById("titel").value;
   let blog = CKEDITOR.instances.editor1.getData();
@@ -94,7 +99,6 @@ function publish(e){
   let month = date.getMonth();
   let year = date.getFullYear();
   let postedOn = day +' '+month+' '+year;
-  
   let articleData = {
     title: titel,
     body: blog,
@@ -115,39 +119,66 @@ function publish(e){
         alert(error.message)
     }); 
 }
+/**Show values on screen */
 function getValues(){
     document.querySelector('#postList').innerHTML = "";
     ref.on('value', function(snapshot) {
       console.log(snapshot.val());
       snapshot.forEach(function(childSnapshot) {
-          data = childSnapshot.val();
-          console.log(data);
-          document.querySelector('#postList').innerHTML += '<h1>' + data.title + '</h1>';
-          document.querySelector('#postList').innerHTML += '<p>' + data.auteur + ' - ' + data.date_added + '</p>';
-          document.querySelector('#postList').innerHTML += '<p>' + data.body + '</p><button id="' + childSnapshot.key + '" class="deleteKnop">Remove</button><button id="' + childSnapshot.key + '" class="editKnop">Edit</button>';
+          post = childSnapshot.val();
+          console.log(post);
+          document.querySelector('#postList').innerHTML += '<h1>' + post.title + '</h1>';
+          document.querySelector('#postList').innerHTML += '<p>' + post.auteur + '   ' + post.date_added + '</p>';
+          document.querySelector('#postList').innerHTML += '<p>' + post.body + '</p><button id="' + childSnapshot.key + '" class="deleteKnop">Remove</button><button id="' + childSnapshot.key + '" class="editKnop">Edit</button>';
       });
     });
   }
-
-
+  /**Remove function */
 function remove(e){
   let articleKey = e.currentTarget.id
   let article = database.ref('article/' + articleKey);
   article.remove();
  }
+ /**Edit function */
 function edit(e){
   let editform = document.querySelector('.formBoxEdit');
   editform.style.display = "block";
   let articleKey = e.currentTarget.id
   let article = database.ref('article/' + articleKey);
+  localStorage.setItem('key', articleKey);
   article.on('value',function(snapshot){
     data = snapshot.val();
     document.getElementById('editTitel').value = data.title;
     document.getElementById('editEditor').value = data.body;
-    
+    window.screenX=0;
+    window.screenY=50;
   });
-
-
+}
+/**Confirm the edit*/
+document.getElementById('confirmEditButton').addEventListener('click', confirm);
+function confirm(e){
+  e.preventDefault();
+  let newKey = localStorage.getItem('key');
+  let email = document.getElementById('userInfo').innerHTML;
+  let titel = document.getElementById("editTitel").value;
+  let blog = document.getElementById("editEditor").value;
+  let auteur = email;
+  let date = new Date();
+  let day = date.getDate();
+  let month = date.getMonth();
+  let year = date.getFullYear();
+  let postedOn = day+' '+month+' '+year;
+  let articleData = {
+    title: titel,
+    body: blog,
+    auteur:auteur,
+    date_added:postedOn,
+    date_edited: firebase.database.ServerValue.TIMESTAMP,
+    uid: email,
+  };
+  var updates = {};
+  updates['article/' + newKey] = articleData;
+  firebase.database().ref().update(updates);
 }
 function errData(err){
   console.log(err);
