@@ -11,6 +11,14 @@ body {
 margin-left:27.5%;
 color: rgb(47, 99, 138);
 }
+#logoutButton{
+  display:none;
+  background-color:none;
+  margin-left:-0%;
+  color:#fff;
+  padding:1%;
+
+}
 #editor1{
   max-width:250px;
 }

@@ -56,6 +56,7 @@ function login(e){
       document.getElementById("singupform").style.display="none";
       document.getElementById("loginform").style.display="none";
       document.querySelector('.formBoxPost').style.display="block";
+      document.querySelector('#logoutButton').style.display="block";
       let buttons = document.querySelectorAll(".deleteKnop");
       for(let i = 0; i<buttons.length; i++){
         buttons[i].addEventListener('click', remove);
@@ -75,6 +76,28 @@ function login(e){
     document.querySelector('.login_errorCode').innerHTML = errorMessage;
   });
 }
+document.getElementById('logoutButton').addEventListener('click',e => {
+  firebase.auth().signOut();
+  document.getElementById("singupform").style.display="block";
+      document.getElementById("loginform").style.display="block";
+      document.querySelector('.formBoxPost').style.display="none";
+      document.querySelector('#logoutButton').style.display="none";
+      document.getElementById('userInfo').innerHTML = "";
+
+      let buttons = document.querySelectorAll(".deleteKnop");
+      for(let i = 0; i<buttons.length; i++){
+        buttons[i].addEventListener('click', remove);
+        buttons[i].style.display="none";
+      }
+      let editButtons = document.querySelectorAll(".editKnop");
+      for(let y = 0; y<editButtons.length; y++){
+        editButtons[y].style.display="none";
+        editButtons[y].addEventListener('click', edit);
+      }
+
+  console.log('uitgelogd');
+});
+
 /**Reset funtion */
 document.getElementById('forgot').addEventListener('click', reset);
 function reset(e){
