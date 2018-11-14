@@ -27,6 +27,7 @@ document.getElementById("login").addEventListener('click', login);
 document.getElementById("publish").addEventListener('click', publish);
 /*Signup function*/
 function signup(e){
+  e.preventDefault();
   let email = document.getElementById("signup_email").value;
   let password = document.getElementById("signup_password").value;
   firebase.auth().createUserWithEmailAndPassword(email, password)
@@ -41,8 +42,19 @@ function signup(e){
     document.querySelector('.singup_errorCode').innerHTML = errorMessage;
   });
 }
+function currentUser(){
+  let currentUser = '';
+
+firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+        currentUser = user.email;
+        currentPass = user.password;
+    }
+});
+}
 /*Login function*/
 function login(e){
+  
   e.preventDefault();
   let email = document.getElementById("login_email").value;
   let password = document.getElementById("login_password").value;
@@ -58,15 +70,26 @@ function login(e){
       document.querySelector('.formBoxPost').style.display="block";
       document.querySelector('#logoutButton').style.display="block";
       let buttons = document.querySelectorAll(".deleteKnop");
-      for(let i = 0; i<buttons.length; i++){
-        buttons[i].addEventListener('click', remove);
-        buttons[i].style.display="block";
-      }
       let editButtons = document.querySelectorAll(".editKnop");
-      for(let y = 0; y<editButtons.length; y++){
-        editButtons[y].style.display="block";
-        editButtons[y].addEventListener('click', edit);
-      }
+      ref.on('value', function(snapshot) {
+        console.log(snapshot.val());
+        snapshot.forEach(function(childSnapshot) {
+          post = childSnapshot.val();
+          currentUser();
+          if( post.auteur = currentUser){
+            for(let i = 0; i<buttons.length; i++){
+                // User is signed in.
+                buttons[i].addEventListener('click', remove);
+                buttons[i].style.display="block";
+              }
+            for(let y = 0; y<editButtons.length; y++){
+                // User is signed in.
+                editButtons[y].style.display="block";
+                editButtons[y].addEventListener('click', edit);
+              } 
+          }
+        })
+      })
     })
     .catch(function(error) {
     // Handle Errors here.
@@ -144,6 +167,7 @@ function publish(e){
 }
 /**Show values on screen */
 function getValues(){
+  currentUser();
     document.querySelector('#postList').innerHTML = "";
     ref.on('value', function(snapshot) {
       console.log(snapshot.val());
@@ -158,6 +182,7 @@ function getValues(){
   }
   /**Remove function */
 function remove(e){
+  alert('test');
   let articleKey = e.currentTarget.id
   let article = database.ref('article/' + articleKey);
   article.remove();
